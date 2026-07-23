@@ -28,8 +28,7 @@
     padding: 20px;
     cursor: pointer;
     transform-origin: center center;
-    /* transform is the ONLY thing that animates while in-grid — cheap, no reflow */
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, opacity 0.15s ease;
   }
 
   .card .img {
@@ -43,23 +42,9 @@
   .card h3 { margin: 0 0 6px; font-size: 16px; }
   .card p { margin: 0; font-size: 13px; color: #aaa; line-height: 1.4; }
 
-  /* state applied by JS during expansion — position:fixed with an
-     explicit starting rect so there's no jump */
-  .card.expanding, .card.expanded, .card.collapsing {
-    position: fixed;
-    z-index: 1000;
-    transition: top 0.4s cubic-bezier(.4,0,.2,1),
-                left 0.4s cubic-bezier(.4,0,.2,1),
-                width 0.4s cubic-bezier(.4,0,.2,1),
-                height 0.4s cubic-bezier(.4,0,.2,1),
-                transform 0.4s cubic-bezier(.4,0,.2,1);
-    transform: none !important; /* kill the proximity scale while expanded */
-  }
-
-  .card.expanded .img { height: 45%; }
-  .card.expanded p { font-size: 16px; }
-
-  .placeholder { visibility: hidden; }
+  /* the clone that actually flies to center */
+  .clone .img { height: 45%; }
+  .clone p { font-size: 16px; }
 
   .overlay {
     position: fixed;
@@ -69,18 +54,15 @@
     transition: background 0.4s ease;
     z-index: 999;
   }
-  .overlay.active { background: rgba(0,0,0,0.6); pointer-events: auto; }
+  .overlay.active { background: rgba(0,0,0,0.6); }
 </style>
 </head>
 <body>
 
 <h1>Experience Grid</h1>
-<p class="note">Move your mouse around — nearby cards scale slightly. Click a card to expand it to center. Click the overlay or the card again to collapse.</p>
+<p class="note">Move your mouse around — nearby cards scale slightly. Hover a card to expand it to center. Move away to collapse.</p>
 
-<div class="grid" id="grid">
-  <!-- cards injected by JS -->
-</div>
-
+<div class="grid" id="grid"></div>
 <div class="overlay" id="overlay"></div>
 
 <script>
@@ -109,111 +91,94 @@ data.forEach((item, i) => {
 });
 
 const cards = Array.from(document.querySelectorAll('.card'));
-let expandedCard = null;
-let placeholder = null;
+let activeClone = null;
+let activeOriginal = null;
 
-// --- Proximity scale: cheap, transform-only, no layout impact ---
+// --- Proximity scale: skipped for whichever card is currently expanded ---
 document.addEventListener('mousemove', (e) => {
-  if (expandedCard) return; // don't fight the expand animation
   cards.forEach(card => {
+    if (card === activeOriginal) return;
     const rect = card.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
 
-    const maxDist = 300;   // influence radius
-    const maxScale = 1.06; // how big it gets at distance 0
+    const maxDist = 300;
+    const maxScale = 1.06;
     const t = Math.max(0, 1 - dist / maxDist);
     const scale = 1 + t * (maxScale - 1);
-
     card.style.transform = `scale(${scale.toFixed(3)})`;
   });
 });
 
-// --- FLIP expand ---
-// cards.forEach(card => {
-//   card.addEventListener('click', () => {
-//     if (expandedCard === card) return collapse();
-//     if (expandedCard) return;
-//     expand(card);
-//   });
-// });
-// overlay.addEventListener('click', collapse);
-
+// --- Hover expand via clone. The original NEVER moves, so its rect
+//     is always trustworthy and it never loses the pointer mid-animation. ---
 cards.forEach(card => {
-  card.addEventListener('mouseenter', () => {
-    if (expandedCard) return;
-    expand(card);
-  });
-
-  card.addEventListener('mouseleave', () => {
-    if (expandedCard === card) return collapse();
-  });
+  card.addEventListener('mouseenter', () => expand(card));
+  card.addEventListener('mouseleave', () => collapse());
 });
+overlay.addEventListener('mouseenter', () => collapse());
 
 function expand(card) {
+  if (activeOriginal) return;
   const rect = card.getBoundingClientRect();
 
-  // hold the grid slot open
-  placeholder = document.createElement('div');
-  placeholder.style.width = rect.width + 'px';
-  placeholder.style.height = rect.height + 'px';
-  card.parentNode.insertBefore(placeholder, card);
-
-  // pin the card exactly where it already visually is — no jump
-  Object.assign(card.style, {
+  const clone = card.cloneNode(true);
+  clone.classList.add('clone');
+  clone.style.transform = 'none'; // strip any inherited proximity-scale transform
+  Object.assign(clone.style, {
+    position: 'fixed',
     top: rect.top + 'px',
     left: rect.left + 'px',
     width: rect.width + 'px',
     height: rect.height + 'px',
     margin: 0,
+    zIndex: 1000,
+    pointerEvents: 'none', // clone is purely visual — never a hover target
+    transition: 'top .4s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.4,0,.2,1), width .4s cubic-bezier(.4,0,.2,1), height .4s cubic-bezier(.4,0,.2,1)',
   });
-  card.classList.add('expanding');
-  document.body.appendChild(card);
+  document.body.appendChild(clone);
+  clone.offsetHeight; // commit starting rect before animating
 
-  card.offsetHeight; // force reflow so the browser commits the starting rect
+  card.style.opacity = '0'; // hide original, keep its box so it still owns hover
 
   requestAnimationFrame(() => {
     const targetW = Math.min(window.innerWidth * 0.6, 600);
     const targetH = Math.min(window.innerHeight * 0.7, 500);
-    Object.assign(card.style, {
+    Object.assign(clone.style, {
       top: (window.innerHeight - targetH) / 2 + 'px',
       left: (window.innerWidth - targetW) / 2 + 'px',
       width: targetW + 'px',
       height: targetH + 'px',
     });
-    card.classList.remove('expanding');
-    card.classList.add('expanded');
-    overlay.classList.add('active');
   });
 
-  expandedCard = card;
+  overlay.classList.add('active');
+  activeClone = clone;
+  activeOriginal = card;
 }
 
 function collapse() {
-  if (!expandedCard) return;
-  const card = expandedCard;
-  const rect = placeholder.getBoundingClientRect();
-
-  card.classList.remove('expanded');
-  card.classList.add('collapsing');
-  overlay.classList.remove('active');
-
-  Object.assign(card.style, {
+  if (!activeClone) return;
+  // original never moved, so this rect is always its true grid position
+  const rect = activeOriginal.getBoundingClientRect();
+  Object.assign(activeClone.style, {
     top: rect.top + 'px',
     left: rect.left + 'px',
     width: rect.width + 'px',
     height: rect.height + 'px',
   });
+  overlay.classList.remove('active');
 
-  card.addEventListener('transitionend', function done() {
-    card.removeEventListener('transitionend', done);
-    card.classList.remove('collapsing');
-    ['position','top','left','width','height','margin','zIndex'].forEach(p => card.style[p] = '');
-    placeholder.parentNode.insertBefore(card, placeholder);
-    placeholder.remove();
-  placeholder = null;
-    expandedCard = null;
+  const clone = activeClone;
+  const original = activeOriginal;
+  activeClone = null;
+  activeOriginal = null;
+
+  clone.addEventListener('transitionend', function done() {
+    clone.removeEventListener('transitionend', done);
+    clone.remove();
+    original.style.opacity = '';
   }, { once: true });
 }
 </script>
