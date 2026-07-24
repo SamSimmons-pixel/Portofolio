@@ -8,11 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+*{ margin:0; padding:0; box-sizing:border-box; }
 
 :root{
     --bg:#09090b;
@@ -23,82 +19,22 @@
     --radius:22px;
 }
 
-body{
-    font-family:Inter,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
-
-.container{
-    width:min(1400px,92%);
-    margin:auto;
-}
+body{ font-family:Inter,sans-serif; background:var(--bg); color:var(--text); }
+.container{ width:min(1400px,92%); margin:auto; }
 
 /* ================= HERO ================= */
-
-.hero{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-}
-
-.hero-content{
-    max-width:800px;
-}
-
-.tag{
-    display:inline-block;
-    padding:.5rem 1rem;
-    border:1px solid var(--border);
-    border-radius:999px;
-    color:#bbb;
-    margin-bottom:1.5rem;
-}
-
-.hero h1{
-    font-size:clamp(3rem,7vw,6rem);
-    line-height:.95;
-    margin-bottom:1rem;
-}
-
-.hero p{
-    font-size:1.15rem;
-    color:#b8b8b8;
-    max-width:650px;
-    line-height:1.8;
-}
-
-.hero-buttons{
-    display:flex;
-    gap:1rem;
-    margin-top:2.5rem;
-}
-
-.hero-buttons a{
-    text-decoration:none;
-    color:white;
-    padding:1rem 1.8rem;
-    border-radius:15px;
-    border:1px solid var(--border);
-    transition:.3s;
-}
-
-.hero-buttons a:hover{
-    background:white;
-    color:black;
-}
+.hero{ min-height:100vh; display:flex; align-items:center; }
+.hero-content{ max-width:800px; }
+.tag{ display:inline-block; padding:.5rem 1rem; border:1px solid var(--border); border-radius:999px; color:#bbb; margin-bottom:1.5rem; }
+.hero h1{ font-size:clamp(3rem,7vw,6rem); line-height:.95; margin-bottom:1rem; }
+.hero p{ font-size:1.15rem; color:#b8b8b8; max-width:650px; line-height:1.8; }
+.hero-buttons{ display:flex; gap:1rem; margin-top:2.5rem; flex-wrap:wrap; }
+.hero-buttons a{ text-decoration:none; color:white; padding:1rem 1.8rem; border-radius:15px; border:1px solid var(--border); transition:.3s; }
+.hero-buttons a:hover{ background:white; color:black; }
 
 /* ================= GRID ================= */
-
-.projects{
-    padding:100px 0;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:25px;
-}
+.projects{ padding:100px 0; }
+.grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:25px; }
 
 .card{
     position:relative;
@@ -112,339 +48,370 @@ body{
     transition:.6s cubic-bezier(.2,.8,.2,1);
 }
 
+.card img{ width:100%; height:100%; object-fit:cover; transition:1s; }
 
-.card img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transition:1s;
-}
+.card::before{ content:""; position:absolute; inset:0; transition:.5s; z-index:1; }
 
-.card::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    transition:.5s;
-    z-index:1;
-}
-
-.preview{
-    position:absolute;
-    bottom:25px;
-    left:25px;
-    right:25px;
-    z-index:3;
-    transition:.45s;
-}
-
-.preview h2{
-    margin-bottom:.5rem;
-}
-
-.preview p{
-    color:#bbb;
-}
+.preview{ position:absolute; bottom:25px; left:25px; right:25px; z-index:3; transition:.45s; }
+.preview h2{ margin-bottom:.5rem; }
+.preview p{ color:#bbb; }
 
 .expand{
-    position:absolute;
-    inset:0;
-    padding:35px;
+    position:absolute; inset:0; padding:35px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    opacity:0; transition:.6s; z-index:4;
+}
+.expand h2{ font-size:2rem; margin-bottom:.8rem; }
+.expand p{ color:#ddd; line-height:1.7; max-width:650px; }
+
+.card:hover{ transform:scale(1.03); z-index:50; }
+.grid:hover .card:not(:hover){ filter:blur(5px) brightness(.55); transform:scale(.96); }
+.card:hover .preview{ opacity:0; transform:translateY(20px); }
+.card:hover .expand{ opacity:1; }
+
+/* ================= MODAL ================= */
+
+.modal-backdrop{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0);
+    pointer-events:none;
+    transition:background .4s ease;
+    z-index:998;
+}
+.modal-backdrop.active{ background:rgba(0,0,0,.75); pointer-events:auto; }
+
+.modal{
+    display:none; /* switched to flex the instant it opens */
+    position:fixed;
+    flex-direction:column;
+    overflow:hidden;
+    border-radius:var(--radius);
+    background:var(--card);
+    border:1px solid var(--border);
+    box-shadow:0 40px 100px rgba(0,0,0,.6);
+    z-index:999;
+    transition:top .5s cubic-bezier(.2,.8,.2,1),
+               left .5s cubic-bezier(.2,.8,.2,1),
+               width .5s cubic-bezier(.2,.8,.2,1),
+               height .5s cubic-bezier(.2,.8,.2,1);
+}
+
+.modal-close{
+    position:absolute; top:18px; right:18px; z-index:5;
+    width:40px; height:40px; border-radius:50%;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,.5);
+    color:#fff; font-size:1.3rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+}
+
+.modal-inner{
     display:flex;
     flex-direction:column;
-    justify-content:flex-end;
+    height:100%;
+    min-height:0;
     opacity:0;
-    transition:.6s;
-    z-index:4;
+    transform:translateY(48px);
+    transition:opacity .4s ease, transform .45s cubic-bezier(.2,.8,.2,1);
 }
-
-.expand h2{
-    font-size:2rem;
-    margin-bottom:.8rem;
-}
-
-.expand p{
-    color:#ddd;
-    line-height:1.7;
-    max-width:650px;
-}
-
-/* still hovers normally -- this is what drives the sibling blur below,
-   since the ORIGINAL card never moves and stays truly :hover-able */
-/* .card:hover{
-    transform:scale(1.08);
-    z-index:50;
-} */
-
-.grid:hover .card:not(:hover){
-    filter:blur(5px) brightness(.55);
-    transform:scale(.94);
-}
-
-.card:hover .preview{
-    opacity:0;
-    transform:translateY(20px);
-}
-
-.card:hover .expand{
+.modal-inner.active{
     opacity:1;
+    transform:translateY(0);
 }
 
-/* the clone that actually flies to center -- pure visual, no interaction */
-.card-clone{
-    box-shadow:0 30px 80px rgba(0,0,0,.6);
-    transform-origin:center center;
-    will-change:top,left,width,height,transform,filter;
-    transition:top .5s cubic-bezier(.2,.8,.2,1),
-                left .5s cubic-bezier(.2,.8,.2,1),
-                width .5s cubic-bezier(.2,.8,.2,1),
-                height .5s cubic-bezier(.2,.8,.2,1),
-                filter .5s cubic-bezier(.2,.8,.2,1),
-                transform .5s cubic-bezier(.2,.8,.2,1),
-                opacity .2s ease;
+.modal-carousel{
+    position:relative;
+    flex:1 1 60%;
+    min-height:0;
+    overflow:hidden;
+    background:#000;
+}
+.carousel-track{
+    display:flex;
+    height:100%;
+    transition:transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.carousel-track img{
+    width:100%; height:100%;
+    object-fit:cover;
+    flex-shrink:0;
 }
 
-.card-clone .preview,
-.card-clone .expand{
-    transition:opacity .45s ease, transform .45s ease;
+.carousel-btn{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:44px; height:44px; border-radius:50%;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,.5);
+    color:#fff; font-size:1.4rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:5;
 }
+.carousel-btn.prev{ left:16px; }
+.carousel-btn.next{ right:16px; }
 
-.card-clone .preview h2,
-.card-clone .preview p,
-.card-clone .expand h2,
-.card-clone .expand p{
-    transition:opacity .45s ease, transform .45s ease;
+.carousel-dots{
+    position:absolute; bottom:16px; left:0; right:0;
+    display:flex; justify-content:center; gap:8px; z-index:5;
 }
+.carousel-dots .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:rgba(255,255,255,.4);
+    cursor:pointer;
+}
+.carousel-dots .dot.active{ background:#fff; }
 
-.card-clone .preview{
-    opacity:0;
+.modal-info{
+    flex:1 1 40%;
+    min-height:0;
+    padding:32px 40px;
+    overflow-y:auto;
 }
-
-.card-clone .expand{
-    opacity:1;
-}
+.modal-info h2{ font-size:1.8rem; margin-bottom:.8rem; }
+.modal-info p{ color:#ccc; line-height:1.8; white-space:pre-line; }
 
 /* Responsive */
-
 @media(max-width:900px){
-
-.grid{
-    grid-template-columns:1fr;
-}
-
-.card:hover{
-    transform:none;
-}
-
-.grid:hover .card:not(:hover){
-    filter: blur(5px) brightness(.55);
-    transform: none;
-}
-
+    .grid{ grid-template-columns:1fr; }
+    .card:hover{ transform:none; }
+    .grid:hover .card:not(:hover){ filter:blur(5px) brightness(.55); transform:none; }
+    .modal-info{ padding:24px; }
 }
 </style>
 </head>
 <body>
 
 <!-- ================= HERO ================= -->
-
 <section class="hero">
 <div class="container">
-
 <div class="hero-content">
-
-<div class="tag">
-PHP Developer • Web Developer
-</div>
-
-<h1>
-Hello,<br>
-I'm Simmons.
-</h1>
-
-<p>
-Building modern PHP applications while exploring animation, UI design,
-and interactive web experiences.
-</p>
-
+<div class="tag">PHP Developer • Laravel Developer • Web Developer • 3D Animator/Artist</div>
+<h1>Hello,<br>I'm Salman.</h1>
+<p><small>Pen Name: Simmons.</small><br>PHP websites with Laravel while exploring animation.</p>
 <div class="hero-buttons">
 <a href="#">Projects</a>
-<a href="#">Contact</a>
+<a href="https://www.instagram.com/c4nnot_sund4/" target="_blank">💻 Dev Instagram</a>
+<a href="https://www.instagram.com/justthatthankyou/" target="_blank">🎨 Animation Instagram</a>
 </div>
-
 </div>
-
 </div>
 </section>
 
 <!-- ================= PROJECTS ================= -->
-
 <section class="projects">
-
 <div class="container">
-
-<div class="grid">
-
-<!-- CARD -->
-
-<div class="card">
-
-<img src="https://picsum.photos/1200/800?1">
-
-<div class="preview">
-<h2>Project Title</h2>
-<p>Short description...</p>
+<div class="grid" id="grid"><!-- cards injected by JS --></div>
 </div>
-
-<div class="expand">
-<h2>Project Title</h2>
-<p>
-Long description goes here.
-Add technologies, achievements,
-or anything you want.
-</p>
-</div>
-
-</div>
-
-<!-- CARD -->
-
-<div class="card">
-
-<img src="https://picsum.photos/1200/800?2">
-
-<div class="preview">
-<h2>Project Title</h2>
-<p>Short description...</p>
-</div>
-
-<div class="expand">
-<h2>Project Title</h2>
-<p>
-Long description goes here.
-</p>
-</div>
-
-</div>
-
-<!-- CARD -->
-
-<div class="card">
-
-<img src="https://picsum.photos/1200/800?3">
-
-<div class="preview">
-<h2>Project Title</h2>
-<p>Short description...</p>
-</div>
-
-<div class="expand">
-<h2>Project Title</h2>
-<p>
-Long description goes here.
-</p>
-</div>
-
-</div>
-
-<!-- CARD -->
-
-<div class="card">
-
-<img src="https://picsum.photos/1200/800?4">
-
-<div class="preview">
-<h2>Project Title</h2>
-<p>Short description...</p>
-</div>
-
-<div class="expand">
-<h2>Project Title</h2>
-<p>
-Long description goes here.
-</p>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </section>
 
-<script>
-const cards = document.querySelectorAll('.card');
-let activeClone = null;
-let activeOriginal = null;
+<!-- ================= MODAL ================= -->
+<div class="modal-backdrop" id="modalBackdrop"></div>
+<div class="modal" id="modal">
+  <button class="modal-close" id="modalClose">&times;</button>
+  <div class="modal-inner" id="modalInner">
+    <div class="modal-carousel">
+      <button class="carousel-btn prev" id="prevBtn">&#8249;</button>
+      <div class="carousel-track" id="carouselTrack"></div>
+      <button class="carousel-btn next" id="nextBtn">&#8250;</button>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+    <div class="modal-info">
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+    </div>
+  </div>
+</div>
 
-cards.forEach(card => {
-  card.addEventListener('mouseenter', () => expandCard(card));
-  card.addEventListener('mouseleave', () => collapseCard());
+<script>
+/* ============================================================
+   1. DATA — the single source of truth.
+   Add/remove projects, images, or edit text here only.
+   ============================================================ */
+const projects = [
+  {
+    title: "Project One",
+    shortDesc: "Quick preview text for card one.",
+    images: [
+      "https://picsum.photos/1200/800?1",
+      "https://picsum.photos/1200/800?11",
+      "https://picsum.photos/1200/800?12",
+    ],
+    description:
+      "Long, detailed description goes here. Talk about the stack used, " +
+      "the problem it solved, and anything you're proud of.\n\n" +
+      "You can use blank lines like this since white-space is preserved."
+  },
+  {
+    title: "Project Two",
+    shortDesc: "Quick preview text for card two.",
+    images: [
+      "https://picsum.photos/1200/800?2",
+      "https://picsum.photos/1200/800?21",
+    ],
+    description: "Detailed write-up for project two goes here."
+  },
+  {
+    title: "Project Three",
+    shortDesc: "Quick preview text for card three.",
+    images: [
+      "https://picsum.photos/1200/800?3",
+      "https://picsum.photos/1200/800?31",
+      "https://picsum.photos/1200/800?32",
+      "https://picsum.photos/1200/800?33",
+    ],
+    description: "Detailed write-up for project three goes here."
+  },
+  {
+    title: "Project Four",
+    shortDesc: "Quick preview text for card four.",
+    images: [ "https://picsum.photos/1200/800?4" ],
+    description: "Detailed write-up for project four goes here."
+  },
+];
+
+/* ============================================================
+   2. RENDER THE GRID from the array above
+   ============================================================ */
+const grid = document.getElementById('grid');
+
+projects.forEach((project, index) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.index = index;
+  card.innerHTML = `
+    <img src="${project.images[0]}" alt="${project.title}">
+    <div class="preview">
+      <h2>${project.title}</h2>
+      <p>${project.shortDesc}</p>
+    </div>
+    <div class="expand">
+      <h2>${project.title}</h2>
+      <p>${project.shortDesc}</p>
+    </div>
+  `;
+  card.addEventListener('click', () => openModal(index, card));
+  grid.appendChild(card);
 });
 
-function expandCard(card) {
-  if (activeOriginal) return; // one at a time
+/* ============================================================
+   3. MODAL — one shared element, repopulated per click
+   ============================================================ */
+const modal = document.getElementById('modal');
+const backdrop = document.getElementById('modalBackdrop');
+const modalClose = document.getElementById('modalClose');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+const modalInner = document.getElementById('modalInner');
+const carouselTrack = document.getElementById('carouselTrack');
+const carouselDots = document.getElementById('carouselDots');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
 
+let activeCard = null;   // which grid card triggered the open (needed to animate back to it)
+let slideIndex = 0;
+let slideCount = 0;
+
+function openModal(index, card) {
+  if (activeCard) return; // one at a time
+  const project = projects[index];
+  activeCard = card;
+
+  // --- populate content BEFORE animating, so it grows in already-correct ---
+  modalTitle.textContent = project.title;
+  modalDesc.textContent = project.description;
+
+  carouselTrack.innerHTML = project.images
+    .map(src => `<img src="${src}" alt="${project.title}">`)
+    .join('');
+  carouselDots.innerHTML = project.images
+    .map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}" data-i="${i}"></div>`)
+    .join('');
+  slideIndex = 0;
+  slideCount = project.images.length;
+  updateCarousel();
+
+  // --- MEASURE: where the clicked card actually is right now ---
   const rect = card.getBoundingClientRect();
 
-  // clone the card -- the original never moves, stays the real hover target
-  const clone = card.cloneNode(true);
-  clone.classList.add('card-clone');
-  clone.style.position = 'fixed';
-  clone.style.pointerEvents = 'none'; // clone can never trigger hover events
-  clone.style.margin = '0';
-  clone.style.top = rect.top + 'px';
-  clone.style.left = rect.left + 'px';
-  clone.style.width = rect.width + 'px';
-  clone.style.height = rect.height + 'px';
-  clone.style.zIndex = '999';
-  clone.style.transition = 'top .5s cubic-bezier(.2,.8,.2,1), left .5s cubic-bezier(.2,.8,.2,1), width .5s cubic-bezier(.2,.8,.2,1), height .5s cubic-bezier(.2,.8,.2,1), filter .5s cubic-bezier(.2,.8,.2,1), transform .5s cubic-bezier(.2,.8,.2,1), opacity .2s ease';
-  clone.style.filter = 'blur(0px) brightness(1)';
-  clone.style.transform = 'scale(1)';
+  // --- PREPARE: show the modal, pinned at the card's exact spot (no visual jump) ---
+  modal.style.display = 'flex';
+  modal.style.top = rect.top + 'px';
+  modal.style.left = rect.left + 'px';
+  modal.style.width = rect.width + 'px';
+  modal.style.height = rect.height + 'px';
 
-  document.body.appendChild(clone);
-  clone.offsetHeight; // commit starting position before animating
+  // --- COMMIT: force the browser to paint the "still at the card" state ---
+  modal.offsetHeight;
 
-  card.style.opacity = '0'; // hide original, its box stays put -> hover stays stable
+  backdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
 
+  // --- CHANGE: next frame, animate to the near-fullscreen target ---
   requestAnimationFrame(() => {
-    const targetW = Math.min(700, window.innerWidth * 0.9);
-    const targetH = targetW * (10 / 16); // keep the 16:10 aspect ratio
-    clone.style.top = ((window.innerHeight - targetH) / 2) + 'px';
-    clone.style.left = ((window.innerWidth - targetW) / 2) + 'px';
-    clone.style.width = targetW + 'px';
-    clone.style.height = targetH + 'px';
+    const targetW = Math.min(1100, window.innerWidth * 0.92);
+    const targetH = window.innerHeight * 0.85; // leaves 7.5% visible top and bottom
+    modal.style.top = ((window.innerHeight - targetH) / 2) + 'px';
+    modal.style.left = ((window.innerWidth - targetW) / 2) + 'px';
+    modal.style.width = targetW + 'px';
+    modal.style.height = targetH + 'px';
   });
 
-  activeClone = clone;
-  activeOriginal = card;
+  // content rises up from the bottom shortly after the frame starts growing
+  modalInner.classList.remove('active');
+  setTimeout(() => modalInner.classList.add('active'), 150);
 }
 
-function collapseCard() {
-  if (!activeClone) return;
+function closeModal() {
+  if (!activeCard) return;
 
-  // original never moved -- this rect is always correct
-  const rect = activeOriginal.getBoundingClientRect();
-  activeClone.style.top = rect.top + 'px';
-  activeClone.style.left = rect.left + 'px';
-  activeClone.style.width = rect.width + 'px';
-  activeClone.style.height = rect.height + 'px';
-  activeClone.style.filter = 'blur(5px) brightness(.55)';
-  activeClone.style.transition = 'top .5s ease, left .5s ease, width .5s ease, height .5s ease, filter .5s ease, transform .5s ease';
-  
-  
-  const clone = activeClone;
-  const original = activeOriginal;
-  activeClone = null;
-  activeOriginal = null;
-    
+  // content drops back down first, in parallel with the frame shrinking
+  modalInner.classList.remove('active');
 
-  clone.addEventListener('transitionend', function done() {
-    clone.remove();
-    original.style.transition = 'none';
-    original.style.opacity = '';
+  // animate back to wherever the original card currently sits
+  const rect = activeCard.getBoundingClientRect();
+  modal.style.top = rect.top + 'px';
+  modal.style.left = rect.left + 'px';
+  modal.style.width = rect.width + 'px';
+  modal.style.height = rect.height + 'px';
+
+  backdrop.classList.remove('active');
+  document.body.style.overflow = '';
+
+  const cardRef = activeCard;
+  activeCard = null;
+
+  modal.addEventListener('transitionend', function done() {
+    modal.removeEventListener('transitionend', done);
+    modal.style.display = 'none';
   }, { once: true });
 }
+
+function updateCarousel() {
+  carouselTrack.style.transform = `translateX(-${slideIndex * 100}%)`;
+  [...carouselDots.children].forEach((dot, i) => {
+    dot.classList.toggle('active', i === slideIndex);
+  });
+}
+
+prevBtn.addEventListener('click', () => {
+  slideIndex = (slideIndex - 1 + slideCount) % slideCount;
+  updateCarousel();
+});
+nextBtn.addEventListener('click', () => {
+  slideIndex = (slideIndex + 1) % slideCount;
+  updateCarousel();
+});
+carouselDots.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('dot')) return;
+  slideIndex = Number(e.target.dataset.i);
+  updateCarousel();
+});
+
+modalClose.addEventListener('click', closeModal);
+backdrop.addEventListener('click', closeModal);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
 </script>
 
 </body>
