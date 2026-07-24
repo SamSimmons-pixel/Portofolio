@@ -90,10 +90,19 @@ body{ font-family:Inter,sans-serif; background:var(--bg); color:var(--text); }
     border:1px solid var(--border);
     box-shadow:0 40px 100px rgba(0,0,0,.6);
     z-index:999;
-    transition:top .5s cubic-bezier(.2,.8,.2,1),
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .25s ease,
+               top .5s cubic-bezier(.2,.8,.2,1),
                left .5s cubic-bezier(.2,.8,.2,1),
                width .5s cubic-bezier(.2,.8,.2,1),
                height .5s cubic-bezier(.2,.8,.2,1);
+}
+.modal.active{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
 }
 
 .modal-close{
@@ -113,7 +122,6 @@ body{ font-family:Inter,sans-serif; background:var(--bg); color:var(--text); }
     min-height:0;
     opacity:0;
     transform:translateY(48px);
-    transition:opacity .4s ease, transform .45s cubic-bezier(.2,.8,.2,1);
 }
 .modal-inner.active{
     opacity:1;
@@ -186,10 +194,9 @@ body{ font-family:Inter,sans-serif; background:var(--bg); color:var(--text); }
 <div class="container">
 <div class="hero-content">
 <div class="tag">PHP Developer • Laravel Developer • Web Developer • 3D Animator/Artist</div>
-<h1>Hello,<br>I'm Salman.</h1>
-<p><small>Pen Name: Simmons.</small><br>PHP websites with Laravel while exploring animation.</p>
+<h1>Hello<br>I'm Salman.</h1>
+<p><small>Pen Name: Simmons.</small><br>PHP websites with Laravel while exploring animation. I use Antigravity to help me Develop.</p>
 <div class="hero-buttons">
-<a href="#">Projects</a>
 <a href="https://www.instagram.com/c4nnot_sund4/" target="_blank">💻 Dev Instagram</a>
 <a href="https://www.instagram.com/justthatthankyou/" target="_blank">🎨 Animation Instagram</a>
 </div>
@@ -280,10 +287,6 @@ projects.forEach((project, index) => {
   card.dataset.index = index;
   card.innerHTML = `
     <img src="${project.images[0]}" alt="${project.title}">
-    <div class="preview">
-      <h2>${project.title}</h2>
-      <p>${project.shortDesc}</p>
-    </div>
     <div class="expand">
       <h2>${project.title}</h2>
       <p>${project.shortDesc}</p>
@@ -339,12 +342,15 @@ function openModal(index, card) {
   modal.style.left = rect.left + 'px';
   modal.style.width = rect.width + 'px';
   modal.style.height = rect.height + 'px';
+  modal.classList.remove('active');
+  modalInner.classList.remove('active');
 
   // --- COMMIT: force the browser to paint the "still at the card" state ---
   modal.offsetHeight;
 
   backdrop.classList.add('active');
   document.body.style.overflow = 'hidden';
+  modal.classList.add('active');
 
   // --- CHANGE: next frame, animate to the near-fullscreen target ---
   requestAnimationFrame(() => {
@@ -357,8 +363,7 @@ function openModal(index, card) {
   });
 
   // content rises up from the bottom shortly after the frame starts growing
-  modalInner.classList.remove('active');
-  setTimeout(() => modalInner.classList.add('active'), 150);
+  setTimeout(() => modalInner.classList.add('active'), 120);
 }
 
 function closeModal() {
@@ -366,6 +371,7 @@ function closeModal() {
 
   // content drops back down first, in parallel with the frame shrinking
   modalInner.classList.remove('active');
+  modal.classList.remove('active');
 
   // animate back to wherever the original card currently sits
   const rect = activeCard.getBoundingClientRect();
