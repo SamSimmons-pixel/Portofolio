@@ -1,424 +1,644 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
-*{ margin:0; padding:0; box-sizing:border-box; }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-:root{
-    --bg:#09090b;
-    --card:#141418;
-    --border:#25252c;
-    --text:#f5f5f5;
-    --muted:#999;
-    --radius:22px;
-}
+    :root {
+      --bg: #09090b;
+      --card: #141418;
+      --border: #25252c;
+      --text: #f5f5f5;
+      --muted: #999;
+      --radius: 22px;
+    }
 
-body{ font-family:Inter,sans-serif; background:var(--bg); color:var(--text); }
-.container{ width:min(1400px,92%); margin:auto; }
+    body {
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-/* ================= HERO ================= */
-.hero{ min-height:100vh; display:flex; align-items:center; }
-.hero-content{ max-width:800px; }
-.tag{ display:inline-block; padding:.5rem 1rem; border:1px solid var(--border); border-radius:999px; color:#bbb; margin-bottom:1.5rem; }
-.hero h1{ font-size:clamp(3rem,7vw,6rem); line-height:.95; margin-bottom:1rem; }
-.hero p{ font-size:1.15rem; color:#b8b8b8; max-width:650px; line-height:1.8; }
-.hero-buttons{ display:flex; gap:1rem; margin-top:2.5rem; flex-wrap:wrap; }
-.hero-buttons a{ text-decoration:none; color:white; padding:1rem 1.8rem; border-radius:15px; border:1px solid var(--border); transition:.3s; }
-.hero-buttons a:hover{ background:white; color:black; }
+    .container {
+      width: min(1400px, 92%);
+      margin: auto;
+    }
 
-/* ================= GRID ================= */
-.projects{ padding:100px 0; }
-.grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:25px; }
+    /* ================= HERO ================= */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
 
-.card{
-    position:relative;
-    border-radius:var(--radius);
-    overflow:hidden;
-    aspect-ratio:16/10;
-    cursor:pointer;
-    border:1px solid var(--border);
-    background:var(--card);
-    isolation:isolate;
-    transition:.6s cubic-bezier(.2,.8,.2,1);
-}
+    .hero-content {
+      max-width: 800px;
+    }
 
-.card img{ width:100%; height:100%; object-fit:cover; transition:1s; }
+    .tag {
+      display: inline-block;
+      padding: .5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #bbb;
+      margin-bottom: 1.5rem;
+    }
 
-.card::before{ content:""; position:absolute; inset:0; transition:.5s; z-index:1; }
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: .95;
+      margin-bottom: 1rem;
+    }
 
-.preview{ position:absolute; bottom:25px; left:25px; right:25px; z-index:3; transition:.45s; }
-.preview h2{ margin-bottom:.5rem; }
-.preview p{ color:#bbb; }
+    .hero p {
+      font-size: 1.15rem;
+      color: #b8b8b8;
+      max-width: 650px;
+      line-height: 1.8;
+    }
 
-.expand{
-    position:absolute; inset:0; padding:35px;
-    display:flex; flex-direction:column; justify-content:flex-end;
-    opacity:0; transition:.6s; z-index:4;
-}
-.expand h2{ font-size:2rem; margin-bottom:.8rem; }
-.expand p{ color:#ddd; line-height:1.7; max-width:650px; }
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
 
-.card:hover{ transform:scale(1.03); z-index:50; }
-.grid:hover .card:not(:hover){ filter:blur(5px) brightness(.55); transform:scale(.96); }
-.card:hover .preview{ opacity:0; transform:translateY(20px); }
-.card:hover .expand{ opacity:1; }
+    .hero-buttons a {
+      text-decoration: none;
+      color: white;
+      padding: 1rem 1.8rem;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      transition: .3s;
+    }
 
-/* ================= MODAL ================= */
+    .hero-buttons a:hover {
+      background: white;
+      color: black;
+    }
 
-.modal-backdrop{
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0);
-    pointer-events:none;
-    transition:background .4s ease;
-    z-index:998;
-}
-.modal-backdrop.active{ background:rgba(0,0,0,.75); pointer-events:auto; }
+    /* ================= GRID ================= */
+    .projects {
+      padding: 100px 0;
+    }
 
-.modal{
-    display:none; /* switched to flex the instant it opens */
-    position:fixed;
-    flex-direction:column;
-    overflow:hidden;
-    border-radius:var(--radius);
-    background:var(--card);
-    border:1px solid var(--border);
-    box-shadow:0 40px 100px rgba(0,0,0,.6);
-    z-index:999;
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-    transition:opacity .25s ease,
-               top .5s cubic-bezier(.2,.8,.2,1),
-               left .5s cubic-bezier(.2,.8,.2,1),
-               width .5s cubic-bezier(.2,.8,.2,1),
-               height .5s cubic-bezier(.2,.8,.2,1);
-}
-.modal.active{
-    opacity:1;
-    visibility:visible;
-    pointer-events:auto;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+    }
 
-.modal-close{
-    position:absolute; top:18px; right:18px; z-index:5;
-    width:40px; height:40px; border-radius:50%;
-    border:1px solid var(--border);
-    background:rgba(0,0,0,.5);
-    color:#fff; font-size:1.3rem; line-height:1;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-}
+    .card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 16/10;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      isolation: isolate;
+      transition: .6s cubic-bezier(.2, .8, .2, 1);
+    }
 
-.modal-inner{
-    display:flex;
-    flex-direction:column;
-    height:100%;
-    min-height:0;
-    opacity:0;
-    transform:translateY(48px);
-}
-.modal-inner.active{
-    opacity:1;
-    transform:translateY(0);
-}
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 1s;
+    }
 
-.modal-carousel{
-    position:relative;
-    flex:1 1 60%;
-    min-height:0;
-    overflow:hidden;
-    background:#000;
-}
-.carousel-track{
-    display:flex;
-    height:100%;
-    transition:transform .4s cubic-bezier(.2,.8,.2,1);
-}
-.carousel-track img{
-    width:100%; height:100%;
-    object-fit:cover;
-    flex-shrink:0;
-}
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transition: .5s;
+      z-index: 1;
+    }
 
-.carousel-btn{
-    position:absolute; top:50%; transform:translateY(-50%);
-    width:44px; height:44px; border-radius:50%;
-    border:1px solid var(--border);
-    background:rgba(0,0,0,.5);
-    color:#fff; font-size:1.4rem;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; z-index:5;
-}
-.carousel-btn.prev{ left:16px; }
-.carousel-btn.next{ right:16px; }
+    .preview {
+      position: absolute;
+      bottom: 25px;
+      left: 25px;
+      right: 25px;
+      z-index: 3;
+      transition: .45s;
+    }
 
-.carousel-dots{
-    position:absolute; bottom:16px; left:0; right:0;
-    display:flex; justify-content:center; gap:8px; z-index:5;
-}
-.carousel-dots .dot{
-    width:8px; height:8px; border-radius:50%;
-    background:rgba(255,255,255,.4);
-    cursor:pointer;
-}
-.carousel-dots .dot.active{ background:#fff; }
+    .preview h2 {
+      margin-bottom: .5rem;
+    }
 
-.modal-info{
-    flex:1 1 40%;
-    min-height:0;
-    padding:32px 40px;
-    overflow-y:auto;
-}
-.modal-info h2{ font-size:1.8rem; margin-bottom:.8rem; }
-.modal-info p{ color:#ccc; line-height:1.8; white-space:pre-line; }
+    .preview p {
+      color: #bbb;
+    }
 
-/* Responsive */
-@media(max-width:900px){
-    .grid{ grid-template-columns:1fr; }
-    .card:hover{ transform:none; }
-    .grid:hover .card:not(:hover){ filter:blur(5px) brightness(.55); transform:none; }
-    .modal-info{ padding:24px; }
-}
-</style>
+    .expand {
+      position: absolute;
+      inset: 0;
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      opacity: 0;
+      transition: .6s;
+      z-index: 4;
+    }
+
+    .expand h2 {
+      font-size: 2rem;
+      margin-bottom: .8rem;
+    }
+
+    .expand p {
+      color: #ddd;
+      line-height: 1.7;
+      max-width: 650px;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      z-index: 50;
+    }
+
+    .grid:hover .card:not(:hover) {
+      filter: blur(5px) brightness(.55);
+      transform: scale(.96);
+    }
+
+    .card:hover .preview {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .card:hover .expand {
+      opacity: 1;
+    }
+
+    /* ================= MODAL ================= */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      pointer-events: none;
+      transition: background .4s ease;
+      z-index: 998;
+    }
+
+    .modal-backdrop.active {
+      background: rgba(0, 0, 0, .75);
+      pointer-events: auto;
+    }
+
+    .modal {
+      display: none;
+      /* switched to flex the instant it opens */
+      position: fixed;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .6);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .25s ease,
+        top .5s cubic-bezier(.2, .8, .2, 1),
+        left .5s cubic-bezier(.2, .8, .2, 1),
+        width .5s cubic-bezier(.2, .8, .2, 1),
+        height .5s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 5;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, .5);
+      color: #fff;
+      font-size: 1.3rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .modal-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      opacity: 0;
+      transform: translateY(48px);
+    }
+
+    .modal-inner.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal-carousel {
+      position: relative;
+      flex: 1 1 60%;
+      min-height: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform .4s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .carousel-track img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, .5);
+      color: #fff;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .carousel-btn.prev {
+      left: 16px;
+    }
+
+    .carousel-btn.next {
+      right: 16px;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .carousel-dots .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .4);
+      cursor: pointer;
+    }
+
+    .carousel-dots .dot.active {
+      background: #fff;
+    }
+
+    .modal-info {
+      flex: 1 1 40%;
+      min-height: 0;
+      padding: 32px 40px;
+      overflow-y: auto;
+    }
+
+    .modal-info h2 {
+      font-size: 1.8rem;
+      margin-bottom: .8rem;
+    }
+
+    .modal-info p {
+      color: #ccc;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    /* Responsive */
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card:hover {
+        transform: none;
+      }
+
+      .grid:hover .card:not(:hover) {
+        filter: blur(5px) brightness(.55);
+        transform: none;
+      }
+
+      .modal-info {
+        padding: 24px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ================= HERO ================= -->
-<section class="hero">
-<div class="container">
-<div class="hero-content">
-<div class="tag">PHP Developer • Laravel Developer • Web Developer • 3D Animator/Artist</div>
-<h1>Hello<br>I'm Salman.</h1>
-<p><small>Pen Name: Simmons.</small><br>PHP websites with Laravel while exploring animation. I use Antigravity to help me Develop.</p>
-<div class="hero-buttons">
-<a href="https://www.instagram.com/c4nnot_sund4/" target="_blank">💻 Dev Instagram</a>
-<a href="https://www.instagram.com/justthatthankyou/" target="_blank">🎨 Animation Instagram</a>
-</div>
-</div>
-</div>
-</section>
-
-<!-- ================= PROJECTS ================= -->
-<section class="projects">
-<div class="container">
-<div class="grid" id="grid"><!-- cards injected by JS --></div>
-</div>
-</section>
-
-<!-- ================= MODAL ================= -->
-<div class="modal-backdrop" id="modalBackdrop"></div>
-<div class="modal" id="modal">
-  <button class="modal-close" id="modalClose">&times;</button>
-  <div class="modal-inner" id="modalInner">
-    <div class="modal-carousel">
-      <button class="carousel-btn prev" id="prevBtn">&#8249;</button>
-      <div class="carousel-track" id="carouselTrack"></div>
-      <button class="carousel-btn next" id="nextBtn">&#8250;</button>
-      <div class="carousel-dots" id="carouselDots"></div>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="tag">PHP Developer • Laravel Developer • Web Developer • 3D Animator/Artist</div>
+        <h1>Hello<br>I'm Salman.</h1>
+        <p><small>Pen Name: Simmons.</small><br>PHP websites with Laravel while exploring animation. I use Antigravity
+          to help me Develop.</p>
+        <br>
+        <small>Ongoing Project: <br>
+          1. 3D Game Portofolio site ZZZ style.<br>
+          2. Blender custom Render Engine "Kahki". (Still Private)
+        </small>
+        <div class="hero-buttons">
+          <a href="https://www.instagram.com/c4nnot_sund4/" target="_blank">💻 Dev Instagram</a>
+          <a href="https://www.instagram.com/justthatthankyou/" target="_blank">🎨 Animation Instagram</a>
+          <a href="https://github.com/SamSimmons-pixel" target="_blank">📦 GitHub Profile</a>
+        </div>
+      </div>
     </div>
-    <div class="modal-info">
-      <h2 id="modalTitle"></h2>
-      <p id="modalDesc"></p>
+  </section>
+
+  <!-- ================= PROJECTS ================= -->
+  <section class="projects">
+    <div class="container">
+      <div class="grid" id="grid"><!-- cards injected by JS --></div>
+    </div>
+  </section>
+
+  <!-- ================= MODAL ================= -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-inner" id="modalInner">
+      <div class="modal-carousel">
+        <button class="carousel-btn prev" id="prevBtn">&#8249;</button>
+        <div class="carousel-track" id="carouselTrack"></div>
+        <button class="carousel-btn next" id="nextBtn">&#8250;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
+      <div class="modal-info">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+        <a href="" id="modalLinks"></a>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-/* ============================================================
-   1. DATA — the single source of truth.
-   Add/remove projects, images, or edit text here only.
-   ============================================================ */
-const projects = [
-  {
-    title: "Project One",
-    shortDesc: "Quick preview text for card one.",
-    images: [
-      "https://picsum.photos/1200/800?1",
-      "https://picsum.photos/1200/800?11",
-      "https://picsum.photos/1200/800?12",
-    ],
-    description:
-      "Long, detailed description goes here. Talk about the stack used, " +
-      "the problem it solved, and anything you're proud of.\n\n" +
-      "You can use blank lines like this since white-space is preserved."
-  },
-  {
-    title: "Project Two",
-    shortDesc: "Quick preview text for card two.",
-    images: [
-      "https://picsum.photos/1200/800?2",
-      "https://picsum.photos/1200/800?21",
-    ],
-    description: "Detailed write-up for project two goes here."
-  },
-  {
-    title: "Project Three",
-    shortDesc: "Quick preview text for card three.",
-    images: [
-      "https://picsum.photos/1200/800?3",
-      "https://picsum.photos/1200/800?31",
-      "https://picsum.photos/1200/800?32",
-      "https://picsum.photos/1200/800?33",
-    ],
-    description: "Detailed write-up for project three goes here."
-  },
-  {
-    title: "Project Four",
-    shortDesc: "Quick preview text for card four.",
-    images: [ "https://picsum.photos/1200/800?4" ],
-    description: "Detailed write-up for project four goes here."
-  },
-];
+  <script>
+    /* ============================================================
+       1. DATA — the single source of truth.
+       Add/remove projects, images, or edit text here only.
+       ============================================================ */
+    const projects = [
+      {
+        title: "Rodja Studio",
+        shortDesc: "Building Lecture & Running Text Management System",
+        images: [
+          "./Online Image/{F481AF30-C08E-4DDC-B38A-580ED4E3A059}.png",
+          "./Online Image/20260723_150758.jpg",
+          "./Online Image/20260729_142918.jpg",
+        ],
+        description:
+          "During my first company internship, " +
+          "I was taught how to properly build admin panels with a focus on \n user convenience and system usability. \n I implemented key features, including: \n\n 1. Raw JSON Data for TV Running Text \n 2. Automated schedule turn-off implementation once time has passed \n 3. Integrating existing APIs for Prayer Times and Hijri Calendar timing \n 4. Real-time notifications with Laravel Reverb for every system change to track which user modified data. \n\n" +
+          "I was also taught how to use Docker and GitHub to transition projects to Production Mode and how to use WSL with the Ubuntu Linux distribution for Docker requirements."
+      },
+      {
+        title: "Hafana Travel",
+        shortDesc: "Building a package database for easy management.",
+        images: [
+          "./Online Image/Screenshot 2026-07-30 232634.png",
+          "./Online Image/Screenshot 2026-07-30 232706.png",
+          "./Online Image/image.png",
+        ],
+        description: "Created a package database for easy management. I was asked to build a system where travel packages can be managed effortlessly without redesigning the layout each time. I used custom post types (CPT) and Advanced Custom Fields (ACF) plugins to handle the database management."
+      },
+      {
+        title: "Blender Youtube Downloader Addon",
+        shortDesc: "Simple Addon with Simple Steps",
+        images: ["./Online Image/Screenshot 2026-07-28 212313.png"],
+        description: "When i want to animate something, i usually take the references from Youtube, but the steps to get the Youtube video is taking soo long so i searched for Youtube Blender Addon but i don't find any, i find 1 but it doesn't work anymore, so i made it myself, with a little help frorm Claude, FFmpeg and, Yt-Dlp source from GitHub, i was able to make Youtube Downloader in Blender. \n\n Download link: https://drive.google.com/drive/folders/1DmTq3p0SvQ5YXeANUrOxrirehN44XVw2?usp=drive_link"
+      },
+      {
+        title: "Fan HTML Landing Pages",
+        shortDesc: "Credit: Dillon Goo",
+        images: ["./Online Image/website_github_gallery20251023013604okzcjln.png"],
+        description: "This is my best design from raw HTML coding, just landing page, no feature. But i think this is cool."
+      },
+      {
+        title: "Final Project: Worship Tracking App",
+        shortDesc: "Muslim Kids.",
+        images: [
+          "./Online Image/Screenshot_20260730_234450_Gallery.jpg",
+          "./Online Image/Screenshot_20260601_220301.jpg",
+          "./Online Image/Screenshot_20260601_220305.jpg",
+          "./Online Image/Screenshot_20260601_221103.jpg",
+          "./Online Image/Screenshot_20260601_221442.jpg",
+        ],
+        description: "At the end of semester 2, our 4-member team built an application using the Flutter framework and Laravel backend. With 2 designers and 2 developers, we created an app named 'Muslim Kids'. The goal of this application is to gamify worship tracking with a reward system that motivates young users in performing their daily worship routines. \n\n Application Module: https://drive.google.com/file/d/10kPWJ9nzoP2zeQexMFDL3VLK9-ttV8vQ/view?usp=sharing",
+      },
+      {
+        title: "Loundry Service Management Website",
+        shortDesc: "Final Project in 1st Semester",
+        images: [
+          "./Online Image/748150444_17897753988511449_8025612810316857167_n.jpg",
+          "./Online Image/749609374_17897753970511449_5374773044658996858_n.jpg"
+        ],
+        description: "This is my first website to get me pass from Final Project in 1st semester, I was going for Loundry Order Management with a lot of un-related features such as 3d mini-game, but i scrap the idea because i don't have much time to do that. The main feature for this is Online Loundry Order. \n With Midtrans for the payment system, i was able to make a business concept of how the flow of Ordering a Online Loundry. It was never been use in a commercial but this is my first project for the end of the Semester. \n\n Module Link: https://drive.google.com/file/d/1MCt0u7ggARPQdo37N4eUIPMT-iiw0gJc/view?usp=drive_link"
+      },
 
-/* ============================================================
-   2. RENDER THE GRID from the array above
-   ============================================================ */
-const grid = document.getElementById('grid');
+    ];
 
-projects.forEach((project, index) => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.dataset.index = index;
-  card.innerHTML = `
+    /* ============================================================
+       2. RENDER THE GRID from the array above
+       ============================================================ */
+    const grid = document.getElementById('grid');
+
+    projects.forEach((project, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = index;
+      card.innerHTML = `
     <img src="${project.images[0]}" alt="${project.title}">
     <div class="expand">
       <h2>${project.title}</h2>
       <p>${project.shortDesc}</p>
     </div>
   `;
-  card.addEventListener('click', () => openModal(index, card));
-  grid.appendChild(card);
-});
+      card.addEventListener('click', () => openModal(index, card));
+      grid.appendChild(card);
+    });
 
-/* ============================================================
-   3. MODAL — one shared element, repopulated per click
-   ============================================================ */
-const modal = document.getElementById('modal');
-const backdrop = document.getElementById('modalBackdrop');
-const modalClose = document.getElementById('modalClose');
-const modalTitle = document.getElementById('modalTitle');
-const modalDesc = document.getElementById('modalDesc');
-const modalInner = document.getElementById('modalInner');
-const carouselTrack = document.getElementById('carouselTrack');
-const carouselDots = document.getElementById('carouselDots');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
+    /* ============================================================
+       3. MODAL — one shared element, repopulated per click
+       ============================================================ */
+    const modal = document.getElementById('modal');
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalInner = document.getElementById('modalInner');
+    const modalLinks = document.getElementById('modalLinks');
+    const carouselTrack = document.getElementById('carouselTrack');
+    const carouselDots = document.getElementById('carouselDots');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-let activeCard = null;   // which grid card triggered the open (needed to animate back to it)
-let slideIndex = 0;
-let slideCount = 0;
+    let activeCard = null;   // which grid card triggered the open (needed to animate back to it)
+    let slideIndex = 0;
+    let slideCount = 0;
 
-function openModal(index, card) {
-  if (activeCard) return; // one at a time
-  const project = projects[index];
-  activeCard = card;
+    function openModal(index, card) {
+      if (activeCard) return; // one at a time
+      const project = projects[index];
+      activeCard = card;
 
-  // --- populate content BEFORE animating, so it grows in already-correct ---
-  modalTitle.textContent = project.title;
-  modalDesc.textContent = project.description;
+      // --- populate content BEFORE animating, so it grows in already-correct ---
+      modalTitle.textContent = project.title;
+      modalDesc.textContent = project.description;
 
-  carouselTrack.innerHTML = project.images
-    .map(src => `<img src="${src}" alt="${project.title}">`)
-    .join('');
-  carouselDots.innerHTML = project.images
-    .map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}" data-i="${i}"></div>`)
-    .join('');
-  slideIndex = 0;
-  slideCount = project.images.length;
-  updateCarousel();
 
-  // --- MEASURE: where the clicked card actually is right now ---
-  const rect = card.getBoundingClientRect();
+      carouselDots.innerHTML = project.images
+        .map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}" data-i="${i}"></div>`)
+        .join('');
 
-  // --- PREPARE: show the modal, pinned at the card's exact spot (no visual jump) ---
-  modal.style.display = 'flex';
-  modal.style.top = rect.top + 'px';
-  modal.style.left = rect.left + 'px';
-  modal.style.width = rect.width + 'px';
-  modal.style.height = rect.height + 'px';
-  modal.classList.remove('active');
-  modalInner.classList.remove('active');
+      carouselTrack.innerHTML = project.images
+        .map(src => `<img src="${src}" alt="${project.title}">`)
+        .join('');
 
-  // --- COMMIT: force the browser to paint the "still at the card" state ---
-  modal.offsetHeight;
 
-  backdrop.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  modal.classList.add('active');
+      carouselDots.innerHTML = project.images
+        .map((_, i) => `<div class="dot${i === 0 ? ' active' : ''}" data-i="${i}"></div>`)
+        .join('');
+      slideIndex = 0;
+      slideCount = project.images.length;
+      updateCarousel();
 
-  // --- CHANGE: next frame, animate to the near-fullscreen target ---
-  requestAnimationFrame(() => {
-    const targetW = Math.min(1100, window.innerWidth * 0.92);
-    const targetH = window.innerHeight * 0.85; // leaves 7.5% visible top and bottom
-    modal.style.top = ((window.innerHeight - targetH) / 2) + 'px';
-    modal.style.left = ((window.innerWidth - targetW) / 2) + 'px';
-    modal.style.width = targetW + 'px';
-    modal.style.height = targetH + 'px';
-  });
+      // --- MEASURE: where the clicked card actually is right now ---
+      const rect = card.getBoundingClientRect();
 
-  // content rises up from the bottom shortly after the frame starts growing
-  setTimeout(() => modalInner.classList.add('active'), 120);
-}
+      // --- PREPARE: show the modal, pinned at the card's exact spot (no visual jump) ---
+      modal.style.display = 'flex';
+      modal.style.top = rect.top + 'px';
+      modal.style.left = rect.left + 'px';
+      modal.style.width = rect.width + 'px';
+      modal.style.height = rect.height + 'px';
+      modal.classList.remove('active');
+      modalInner.classList.remove('active');
 
-function closeModal() {
-  if (!activeCard) return;
+      // --- COMMIT: force the browser to paint the "still at the card" state ---
+      modal.offsetHeight;
 
-  // content drops back down first, in parallel with the frame shrinking
-  modalInner.classList.remove('active');
-  modal.classList.remove('active');
+      backdrop.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      modal.classList.add('active');
 
-  // animate back to wherever the original card currently sits
-  const rect = activeCard.getBoundingClientRect();
-  modal.style.top = rect.top + 'px';
-  modal.style.left = rect.left + 'px';
-  modal.style.width = rect.width + 'px';
-  modal.style.height = rect.height + 'px';
+      // --- CHANGE: next frame, animate to the near-fullscreen target ---
+      requestAnimationFrame(() => {
+        const targetW = Math.min(1100, window.innerWidth * 0.92);
+        const targetH = window.innerHeight * 0.85; // leaves 7.5% visible top and bottom
+        modal.style.top = ((window.innerHeight - targetH) / 2) + 'px';
+        modal.style.left = ((window.innerWidth - targetW) / 2) + 'px';
+        modal.style.width = targetW + 'px';
+        modal.style.height = targetH + 'px';
+      });
 
-  backdrop.classList.remove('active');
-  document.body.style.overflow = '';
+      // content rises up from the bottom shortly after the frame starts growing
+      setTimeout(() => modalInner.classList.add('active'), 120);
+    }
 
-  const cardRef = activeCard;
-  activeCard = null;
+    function closeModal() {
+      if (!activeCard) return;
 
-  modal.addEventListener('transitionend', function done() {
-    modal.removeEventListener('transitionend', done);
-    modal.style.display = 'none';
-  }, { once: true });
-}
+      // content drops back down first, in parallel with the frame shrinking
+      modalInner.classList.remove('active');
+      modal.classList.remove('active');
 
-function updateCarousel() {
-  carouselTrack.style.transform = `translateX(-${slideIndex * 100}%)`;
-  [...carouselDots.children].forEach((dot, i) => {
-    dot.classList.toggle('active', i === slideIndex);
-  });
-}
+      // animate back to wherever the original card currently sits
+      const rect = activeCard.getBoundingClientRect();
+      modal.style.top = rect.top + 'px';
+      modal.style.left = rect.left + 'px';
+      modal.style.width = rect.width + 'px';
+      modal.style.height = rect.height + 'px';
 
-prevBtn.addEventListener('click', () => {
-  slideIndex = (slideIndex - 1 + slideCount) % slideCount;
-  updateCarousel();
-});
-nextBtn.addEventListener('click', () => {
-  slideIndex = (slideIndex + 1) % slideCount;
-  updateCarousel();
-});
-carouselDots.addEventListener('click', (e) => {
-  if (!e.target.classList.contains('dot')) return;
-  slideIndex = Number(e.target.dataset.i);
-  updateCarousel();
-});
+      backdrop.classList.remove('active');
+      document.body.style.overflow = '';
 
-modalClose.addEventListener('click', closeModal);
-backdrop.addEventListener('click', closeModal);
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
-});
-</script>
+      const cardRef = activeCard;
+      activeCard = null;
+
+      modal.addEventListener('transitionend', function done() {
+        modal.removeEventListener('transitionend', done);
+        modal.style.display = 'none';
+      }, { once: true });
+    }
+
+    function updateCarousel() {
+      carouselTrack.style.transform = `translateX(-${slideIndex * 100}%)`;
+      [...carouselDots.children].forEach((dot, i) => {
+        dot.classList.toggle('active', i === slideIndex);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => {
+      slideIndex = (slideIndex - 1 + slideCount) % slideCount;
+      updateCarousel();
+    });
+    nextBtn.addEventListener('click', () => {
+      slideIndex = (slideIndex + 1) % slideCount;
+      updateCarousel();
+    });
+    carouselDots.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('dot')) return;
+      slideIndex = Number(e.target.dataset.i);
+      updateCarousel();
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
 
 </body>
+
 </html>
